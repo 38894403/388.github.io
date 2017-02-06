@@ -1,147 +1,245 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<title></title>
-		<link rel="stylesheet" type="text/css" href="css/font-awesome.min.css"/>
-		<style>
-			.myPlayer{
-				width: 500px;
-				height: 300px;
-				border:1px solid gray;
-				margin: 100px auto;
-			}
-			video{
-				width: 100%;
-				height: 251px;
-				background-color:black;
-			}
-			.controls{
-				display: flex;
-				align-items: center;
-				height: 49px;
-				background-color: black;
-			}
-			.progress{
-				flex:1;	
-				height: 15px;
-				border:1px solid gray;
-				background-color: white;
-			}
-			a{
-				text-decoration: none;
-				margin:0 3px;
-				font-size:20px;
-				color:whitesmoke;
-			}
-			
-			/* 设置进度条默认的外观 */
-			.step{
-				height: 100%;
-				background-color: skyblue;
-				width: 0%;
-			}
-		</style>
-	</head>
-	<body>
-		<div class='myPlayer'>
-			<video ></video>
-			<div class="controls">
-				<a href="#" class='icon-play-circle play'></a>
-				<a href="#" class='icon-pause pause'></a>
-				<div class="progress">
-					<div class="step"></div>
-				</div>
-				<a href="#" class='icon-fullscreen fullscreen'></a>
-			</div>
-		</div>
-	</body>
-</html>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/font-awesome.min.css"/>
+    <style>
+        .container {
+            height: 336px;
+            width: 600px;
+            border: 1px solid #000;
+            margin: 100px auto;
+            border-radius: 10px;
+            box-shadow: 10px 10px 10px;
+            display: flex;
+            overflow: hidden;
+        }
 
-<script type="text/javascript">
-	
-	// 获取 video标签
-	var video = document.querySelector('video');
-	
-	// 播放
-	document.querySelector('.play').onclick = function (){
-//		console.log('开播了');
-	
-		// 设置播放的视频
-		if(video.src==''){
-			video.src = 'movies/movie.ogg';
-		}
-		
-		
-		// 播放视频
-		video.play();
-	}
-	
-	// 暂停
-	document.querySelector('.pause').onclick = function (){
+        .player {
+            flex: 5;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
 
-		
-		// 播放视频
-		video.pause();
-	}
-	
-	
-	// 视频播放事件 开始的时候执行
-	video.onprogress = function (){
-		console.log('progress');
-	}
-	
-	
-	// 播放的时候 一直执行
-	video.ontimeupdate = function (){
-//		console.log('timeupdate')
-		// 总时间
-		// 当前时间
-//		console.log(video.currentTime+'|'+video.duration);
-		
-		// 计算成 百分比即可 0-1的小数 并换算成百分数
-		var percent = video.currentTime / video.duration *100 +"%";
-		
-		
-//		console.log(percent);
-		// 设置给 进度条中的 那个 div 0-100%
-		document.querySelector('.step').style.width = percent;
+        .player video {
+            width: 100%;
+            flex: 8;
+        }
 
-	}
-	
-	// 点击跳转
-	document.querySelector('.progress').onclick = function (e){
-		// 获取 当前这个元素中的 偏移值
-		console.log(e.offsetX);
-		
-		// 将 点击的这个位置 换算为 百分比
-		// 总长度
-		var percent = e.offsetX/this.offsetWidth*100+'%';
-		console.log(percent);
-		
-		// 将百分比 设置给 进度条的宽度
-		document.querySelector('.step').style.width = percent;
-		
-		// 修改视频的播放进度
-		// 使用百分比 * 总时间 换算成 当前时间
-		// percent 是一个字符串
-		// 计算一下 时间
-		video.currentTime = video.duration * e.offsetX/this.offsetWidth;
-	}
-	
-	
-	// 点击全屏
-	document.querySelector('.fullscreen').onclick = function (){
-		if(video.requestFullscreen){
-			video.requestFullscreen();
-		}else if(video.webkitRequestFullScreen){
-			// 如果 在谷歌里面全屏 
-			// 可以再这里 指定 dom元素的大小
-			video.webkitRequestFullScreen();
-		}else if(video.msRequestFullscreen){
-			video.msRequestFullscreen();
-		}else if(video.mozRequestFullScreen){
-			video.mozRequestFullScreen();
-		}
-	}
+        .player #shade {
+            position: absolute;
+            width: 100%;
+            height: 268px;
+            background: rgba(255, 255, 255, 0.4);
+            display: none;
+            text-align: center;
+        }
+
+        .player #shade i {
+            line-height: 268px;
+            font-size: 50px;
+        }
+
+        .player .progress {
+            width: 100%;
+            flex: 1;
+        }
+
+        .player .progress input {
+            width: 100%;
+            height: 100%;
+        }
+
+        .player .control {
+            /*width: 100%;*/
+            flex: 1;
+            background: darkgray;
+            position: relative;
+        }
+
+        .player .control i {
+            font-size: 22px;
+            line-height: 33px;
+            margin: 0 5px;
+        }
+        .player .control .volume{
+            position: absolute;
+            right:30px;
+
+        }
+        #volume{
+            height: 60px;
+            width: 10px;
+            background: firebrick;
+            position:absolute;
+            top: -180%;
+        }
+        #volumeControl{
+            position: absolute;
+            width: 100%;
+            height: 6px;
+            background: black;
+        }
+        .player .control i:last-child {
+            position: absolute;
+            right: 0;
+        }
+
+        .list {
+            flex: 2;
+            background: dimgray;
+        }
+
+        .list p {
+            background: black;
+            color: white;
+            margin: 0;
+            line-height: 30px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .list a {
+            display: block;
+            margin-left: 15px;
+            line-height: 30px;
+            text-decoration: none;
+            color: white;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="player">
+        <video src="movies/01.mp4"></video>
+        <div id="shade">
+            <i class="icon-play"></i>
+        </div>
+        <div class="progress">
+            <input type="range" name="" id=""/>
+        </div>
+        <div class="control">
+            <i class="play icon-play-circle"></i>
+            <i class="pause icon-pause"></i>
+            <i class="volume icon-volume-off">
+                <div id="volume">
+                    <div id="volumeControl"></div>
+                </div>
+            </i>
+            <i class="fullscreen icon-fullscreen"></i>
+        </div>
+    </div>
+    <div class="list">
+        <p>播放列表</p>
+        <a href="javascript:void(0)" data-videoname="movies/01.mp4">I Still Have A Soul</a>
+    </div>
+</div>
+<script>
+    window.onload = function () {
+        document.querySelector("#shade").style.display = "block";
+        //键盘控制事件
+        var playFlag = false;//视频播放标记
+        document.onkeydown = function (e) {
+            if (e.keyCode == 37) {
+                myVideo.currentTime -= 10;
+            } else if (e.keyCode == 39) {
+                myVideo.currentTime += 10;
+            }
+            if (e.keyCode == 32) {
+                if (!playFlag) {
+                    document.querySelector(".play").onclick();
+                    playFlag = true;
+                } else {
+                    document.querySelector(".pause").onclick();
+                    playFlag = false;
+                }
+
+            }
+        }
+    }
+    var myVideo = document.querySelector("video");
+    //1.点击播放按钮,视频开始播放
+    document.querySelector(".play").onclick = function () {
+        myVideo.play();
+        document.querySelector("#shade").style.display = "none";
+    }
+    //1.2.暂停时点击视频窗口播放
+    document.querySelector("#shade>i").onclick = function () {
+        myVideo.play();
+        document.querySelector("#shade").style.display = "none";
+    }
+    //2.点击暂停按钮,视频停止播放
+    document.querySelector(".pause").onclick = function () {
+        myVideo.pause();
+        //视频窗出现遮罩
+        document.querySelector("#shade").style.display = "block";
+    }
+    //2.2.播放时点击视频窗,暂停播放
+    myVideo.onclick = function () {
+        myVideo.pause();
+        document.querySelector("#shade").style.display = "block";
+    }
+    //3.点击全屏
+    document.querySelector(".fullscreen").onclick = function () {
+        if (myVideo.requestFullScreen) {
+            myVideo.requestFullScreen();
+        } else if (myVideo.webkitRequestFullScreen) {
+            myVideo.webkitRequestFullScreen();
+        } else if (myVideo.msRequestFullScreen) {
+            myVideo.msRequestFullScreen();
+        }
+    }
+    //4.视频进度关联进度条
+    //4.1视频播放时进度条要同步
+    myVideo.ontimeupdate = function () {
+        myRange.value = myVideo.currentTime * 100 / myVideo.duration;
+    }
+    //4.2点击进度条视频要同步
+    var myRange = document.querySelector("input[type=range]");
+    myRange.value = 0;//使进度条开始时在0位置
+    myRange.oninput = function () {
+        myVideo.currentTime = this.value / 100 * myVideo.duration;
+    }
+    //5.点击列表项,进行切换
+    var aLists = document.querySelectorAll(".list a");
+    for (var i = 0; i < aLists.length; i++) {
+        aLists[i].onclick = function () {
+            myVideo.src = this.dataset["videoname"];
+            document.querySelector("#shade").style.display = "block";
+        }
+    }
+
+    //静音选项
+    document.querySelector(".icon-volume-off").onclick = function () {
+       /* if (myVideo.muted) {
+            myVideo.muted = false;
+        } else {
+            myVideo.muted = true;
+        }*/
+    }
+    //音量调节
+    document.querySelector("#volume").onclick=function(e){
+        volumePersen= e.offsetY/this.offsetHeight;
+        myVideo.volume=volumePersen;
+        document.querySelector("#volumeControl").style.top= e.offsetY-3+"px";
+        console.log(e.offsetY - 3);
+    }
+    //滑动音量模块
+    document.querySelector("#volumeControl").onclick=function(){
+
+    }
+    /*--------------------------------封装方法区------------------------------------*/
+    //封装方法一.切换布尔值
+    function toggleBollen(name) {
+        if (name) {
+            name = false;
+        } else {
+            name = true;
+        }
+    }
 </script>
+</body>
+</html>
