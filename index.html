@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="css/font-awesome.min.css"/>
+		<style>
+			.myPlayer{
+				width: 500px;
+				height: 300px;
+				border:1px solid gray;
+				margin: 100px auto;
+			}
+			video{
+				width: 100%;
+				height: 251px;
+				background-color:black;
+			}
+			.controls{
+				display: flex;
+				align-items: center;
+				height: 49px;
+				background-color: black;
+			}
+			.progress{
+				flex:1;	
+				height: 15px;
+				border:1px solid gray;
+				background-color: white;
+			}
+			a{
+				text-decoration: none;
+				margin:0 3px;
+				font-size:20px;
+				color:whitesmoke;
+			}
+			
+			/* 设置进度条默认的外观 */
+			.step{
+				height: 100%;
+				background-color: skyblue;
+				width: 0%;
+			}
+		</style>
+	</head>
+	<body>
+		<div class='myPlayer'>
+			<video ></video>
+			<div class="controls">
+				<a href="#" class='icon-play-circle play'></a>
+				<a href="#" class='icon-pause pause'></a>
+				<div class="progress">
+					<div class="step"></div>
+				</div>
+				<a href="#" class='icon-fullscreen fullscreen'></a>
+			</div>
+		</div>
+	</body>
+</html>
+
+<script type="text/javascript">
+	
+	// 获取 video标签
+	var video = document.querySelector('video');
+	
+	// 播放
+	document.querySelector('.play').onclick = function (){
+//		console.log('开播了');
+	
+		// 设置播放的视频
+		if(video.src==''){
+			video.src = 'movies/movie.ogg';
+		}
+		
+		
+		// 播放视频
+		video.play();
+	}
+	
+	// 暂停
+	document.querySelector('.pause').onclick = function (){
+
+		
+		// 播放视频
+		video.pause();
+	}
+	
+	
+	// 视频播放事件 开始的时候执行
+	video.onprogress = function (){
+		console.log('progress');
+	}
+	
+	
+	// 播放的时候 一直执行
+	video.ontimeupdate = function (){
+//		console.log('timeupdate')
+		// 总时间
+		// 当前时间
+//		console.log(video.currentTime+'|'+video.duration);
+		
+		// 计算成 百分比即可 0-1的小数 并换算成百分数
+		var percent = video.currentTime / video.duration *100 +"%";
+		
+		
+//		console.log(percent);
+		// 设置给 进度条中的 那个 div 0-100%
+		document.querySelector('.step').style.width = percent;
+
+	}
+	
+	// 点击跳转
+	document.querySelector('.progress').onclick = function (e){
+		// 获取 当前这个元素中的 偏移值
+		console.log(e.offsetX);
+		
+		// 将 点击的这个位置 换算为 百分比
+		// 总长度
+		var percent = e.offsetX/this.offsetWidth*100+'%';
+		console.log(percent);
+		
+		// 将百分比 设置给 进度条的宽度
+		document.querySelector('.step').style.width = percent;
+		
+		// 修改视频的播放进度
+		// 使用百分比 * 总时间 换算成 当前时间
+		// percent 是一个字符串
+		// 计算一下 时间
+		video.currentTime = video.duration * e.offsetX/this.offsetWidth;
+	}
+	
+	
+	// 点击全屏
+	document.querySelector('.fullscreen').onclick = function (){
+		if(video.requestFullscreen){
+			video.requestFullscreen();
+		}else if(video.webkitRequestFullScreen){
+			// 如果 在谷歌里面全屏 
+			// 可以再这里 指定 dom元素的大小
+			video.webkitRequestFullScreen();
+		}else if(video.msRequestFullscreen){
+			video.msRequestFullscreen();
+		}else if(video.mozRequestFullScreen){
+			video.mozRequestFullScreen();
+		}
+	}
+</script>
